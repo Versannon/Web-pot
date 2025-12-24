@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpot - Web Development Services</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Webpot</div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="cta-btn" onclick="openOrderModal()">Get Started</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Professional Web Development Services</h1>
+            <p>Bring your ideas to life with cutting-edge web solutions. We build fast, modern, and scalable websites for businesses of all sizes.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="document.getElementById('services').scrollIntoView({behavior: 'smooth'})">View Services</button>
+                <button class="btn-secondary" onclick="openOrderModal()">Request a Website</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <!-- Static Websites -->
+            <div class="service-card">
+                <h3>Static Websites</h3>
+                <p>Perfect for portfolios and informational sites</p>
+                <div class="price">$299</div>
+                <ul class="features">
+                    <li>Responsive Design</li>
+                    <li>SEO Optimized</li>
+                    <li>5 Pages</li>
+                    <li>3 Revisions</li>
+                    <li>Delivery: 7 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Static Websites', 299)">Choose Plan</button>
+            </div>
+
+            <!-- Business Websites -->
+            <div class="service-card">
+                <h3>Business Websites</h3>
+                <p>Establish your professional online presence</p>
+                <div class="price">$699</div>
+                <ul class="features">
+                    <li>Professional Design</li>
+                    <li>Full SEO Package</li>
+                    <li>10 Pages</li>
+                    <li>Unlimited Revisions</li>
+                    <li>Delivery: 14 days</li>
+                    <li>Contact Forms</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Business Websites', 699)">Choose Plan</button>
+            </div>
+
+            <!-- E-commerce Websites -->
+            <div class="service-card">
+                <h3>E-commerce Websites</h3>
+                <p>Start selling online with a powerful store</p>
+                <div class="price">$1,299</div>
+                <ul class="features">
+                    <li>Product Management</li>
+                    <li>Payment Gateway</li>
+                    <li>Inventory System</li>
+                    <li>Unlimited Revisions</li>
+                    <li>Delivery: 21 days</li>
+                    <li>3 Months Support</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('E-commerce Websites', 1299)">Choose Plan</button>
+            </div>
+
+            <!-- Landing Pages -->
+            <div class="service-card">
+                <h3>Landing Pages</h3>
+                <p>Convert visitors into customers</p>
+                <div class="price">$399</div>
+                <ul class="features">
+                    <li>High Conversion Design</li>
+                    <li>A/B Testing Ready</li>
+                    <li>Single Page</li>
+                    <li>5 Revisions</li>
+                    <li>Delivery: 5 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Landing Pages', 399)">Choose Plan</button>
+            </div>
+
+            <!-- Website Redesign -->
+            <div class="service-card">
+                <h3>Website Redesign</h3>
+                <p>Modernize your existing website</p>
+                <div class="price">$899</div>
+                <ul class="features">
+                    <li>Modern UI/UX</li>
+                    <li>Performance Boost</li>
+                    <li>Mobile Optimization</li>
+                    <li>Unlimited Revisions</li>
+                    <li>Delivery: 14 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Website Redesign', 899)">Choose Plan</button>
+            </div>
+
+            <!-- Custom Web Applications -->
+            <div class="service-card">
+                <h3>Custom Web Applications</h3>
+                <p>Build powerful web apps for your business</p>
+                <div class="price">$1,999</div>
+                <ul class="features">
+                    <li>Full-Stack Development</li>
+                    <li>Database Design</li>
+                    <li>API Integration</li>
+                    <li>Unlimited Revisions</li>
+                    <li>Delivery: 30 days</li>
+                    <li>6 Months Support</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Custom Web Applications', 1999)">Choose Plan</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="about-content">
+            <h2>About Webpot</h2>
+            <p>We are a team of passionate web developers dedicated to creating exceptional digital experiences. With years of experience in the industry, we've helped hundreds of businesses establish and grow their online presence.</p>
+            <p>Our commitment is simple: deliver high-quality, fast, and reliable web solutions that exceed your expectations. We believe in transparent communication, timely delivery, and ongoing support for all our clients.</p>
+
+            <h3 style="color: var(--neon-blue); margin-top: 2rem; margin-bottom: 1rem;">Our Workflow</h3>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <h4>01. Discovery</h4>
+                    <p>We understand your needs and goals</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>02. Design</h4>
+                    <p>Create stunning visual designs</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>03. Development</h4>
+                    <p>Build robust and scalable solutions</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>04. Testing</h4>
+                    <p>Ensure quality and performance</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>05. Deployment</h4>
+                    <p>Launch your website live</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>06. Support</h4>
+                    <p>Continuous maintenance and updates</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-form">
+            <form id="contactForm" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3 style="color: var(--neon-blue); margin-bottom: 1rem;">Webpot</h3>
+            <p>Professional Web Development Services</p>
+            <div class="social-links">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">𝕏</a>
+                <a href="#" title="LinkedIn">in</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="Email">@</a>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">© 2025 Webpot. All rights reserved.</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Email: contact@webpot.com | Phone: +1 (555) 123-4567</p>
+        </div>
+    </footer>
+
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrderModal()">&times;</span>
+            <h2 style="color: var(--neon-blue); margin-bottom: 1.5rem;">Order a Website</h2>
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                <div class="form-group">
+                    <label for="service">Select Service</label>
+                    <select id="service" name="service" required class="service-select">
+                        <option value="">🗂️ Choose a service...</option>
+                        <option value="Static Websites - $299">🎨 Static Websites - $299</option>
+                        <option value="Business Websites - $699">🏢 Business Websites - $699</option>
+                        <option value="E-commerce Websites - $1,299">🛒 E-commerce Websites - $1,299</option>
+                        <option value="Landing Pages - $399">🎯 Landing Pages - $399</option>
+                        <option value="Website Redesign - $899">✨ Website Redesign - $899</option>
+                        <option value="Custom Web Applications - $1,999">⚙️ Custom Web Applications - $1,999</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="oname">Your Name</label>
+                    <input type="text" id="oname" name="oname" required>
+                </div>
+                <div class="form-group">
+                    <label for="oemail">Email Address</label>
+                    <input type="email" id="oemail" name="oemail" required>
+                </div>
+                <div class="form-group">
+                    <label for="ophone">Phone Number</label>
+                    <input type="tel" id="ophone" name="ophone">
+                </div>
+                <div class="form-group">
+                    <label for="birthdate">📅 Date of Birth</label>
+                    <input type="date" id="birthdate" name="birthdate" class="date-input">
+                </div>
+                <div class="form-group">
+                    <label for="details">Project Details</label>
+                    <textarea id="details" name="details" placeholder="Tell us about your project, timeline, and specific requirements..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Desired Deadline</label>
+                    <input type="date" id="deadline" name="deadline">
+                </div>
+                <div class="form-group">
+                    <label for="budget">Budget Range</label>
+                    <select id="budget" name="budget" class="budget-select">
+                        <option value="">💰 Select budget range</option>
+                        <option value="Under $500">👉 Under $500</option>
+                        <option value="$500 - $1,000">👉 $500 - $1,000</option>
+                        <option value="$1,000 - $2,000">👉 $1,000 - $2,000</option>
+                        <option value="$2,000+">👉 $2,000+</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Submit Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message">
+        <strong>Success!</strong> Your submission has been received. We'll contact you soon.
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
