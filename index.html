@@ -10,12 +10,17 @@
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">Webpot</div>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+            <div class="logo">
+                <img src="logo.png" alt="Webpot Logo" class="logo-img">
+                <span>Webpot</span>
+            </div>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰</button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" onclick="closeMenu()">Home</a></li>
+                <li><a href="#about" onclick="closeMenu()">About</a></li>
+                <li><a href="#services" onclick="closeMenu()">Services</a></li>
+                <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+                <li><a href="auth.html" onclick="closeMenu()">Login</a></li>
             </ul>
             <button class="cta-btn" onclick="openOrderModal()">Get Started</button>
         </nav>
@@ -25,7 +30,7 @@
     <section id="home" class="hero">
         <div class="hero-content">
             <h1>Professional Web Development Services</h1>
-            <p>Bring your ideas to life with cutting-edge web solutions. We build fast, modern, and scalable websites for businesses of all sizes.</p>
+            <p>Bring your ideas to life with advanced web solutions. We build fast, modern, and scalable websites for businesses of all sizes.</p>
             <div class="hero-buttons">
                 <button class="btn-primary" onclick="document.getElementById('services').scrollIntoView({behavior: 'smooth'})">View Services</button>
                 <button class="btn-secondary" onclick="openOrderModal()">Request a Website</button>
@@ -33,110 +38,11 @@
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="services">
-        <h2 class="section-title">Our Services</h2>
-        <div class="services-grid">
-            <!-- Static Websites -->
-            <div class="service-card">
-                <h3>Static Websites</h3>
-                <p>Perfect for portfolios and informational sites</p>
-                <div class="price">$299</div>
-                <ul class="features">
-                    <li>Responsive Design</li>
-                    <li>SEO Optimized</li>
-                    <li>5 Pages</li>
-                    <li>3 Revisions</li>
-                    <li>Delivery: 7 days</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('Static Websites', 299)">Choose Plan</button>
-            </div>
-
-            <!-- Business Websites -->
-            <div class="service-card">
-                <h3>Business Websites</h3>
-                <p>Establish your professional online presence</p>
-                <div class="price">$699</div>
-                <ul class="features">
-                    <li>Professional Design</li>
-                    <li>Full SEO Package</li>
-                    <li>10 Pages</li>
-                    <li>Unlimited Revisions</li>
-                    <li>Delivery: 14 days</li>
-                    <li>Contact Forms</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('Business Websites', 699)">Choose Plan</button>
-            </div>
-
-            <!-- E-commerce Websites -->
-            <div class="service-card">
-                <h3>E-commerce Websites</h3>
-                <p>Start selling online with a powerful store</p>
-                <div class="price">$1,299</div>
-                <ul class="features">
-                    <li>Product Management</li>
-                    <li>Payment Gateway</li>
-                    <li>Inventory System</li>
-                    <li>Unlimited Revisions</li>
-                    <li>Delivery: 21 days</li>
-                    <li>3 Months Support</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('E-commerce Websites', 1299)">Choose Plan</button>
-            </div>
-
-            <!-- Landing Pages -->
-            <div class="service-card">
-                <h3>Landing Pages</h3>
-                <p>Convert visitors into customers</p>
-                <div class="price">$399</div>
-                <ul class="features">
-                    <li>High Conversion Design</li>
-                    <li>A/B Testing Ready</li>
-                    <li>Single Page</li>
-                    <li>5 Revisions</li>
-                    <li>Delivery: 5 days</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('Landing Pages', 399)">Choose Plan</button>
-            </div>
-
-            <!-- Website Redesign -->
-            <div class="service-card">
-                <h3>Website Redesign</h3>
-                <p>Modernize your existing website</p>
-                <div class="price">$899</div>
-                <ul class="features">
-                    <li>Modern UI/UX</li>
-                    <li>Performance Boost</li>
-                    <li>Mobile Optimization</li>
-                    <li>Unlimited Revisions</li>
-                    <li>Delivery: 14 days</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('Website Redesign', 899)">Choose Plan</button>
-            </div>
-
-            <!-- Custom Web Applications -->
-            <div class="service-card">
-                <h3>Custom Web Applications</h3>
-                <p>Build powerful web apps for your business</p>
-                <div class="price">$1,999</div>
-                <ul class="features">
-                    <li>Full-Stack Development</li>
-                    <li>Database Design</li>
-                    <li>API Integration</li>
-                    <li>Unlimited Revisions</li>
-                    <li>Delivery: 30 days</li>
-                    <li>6 Months Support</li>
-                </ul>
-                <button class="btn-primary" onclick="selectService('Custom Web Applications', 1999)">Choose Plan</button>
-            </div>
-        </div>
-    </section>
-
     <!-- About Section -->
-    <section id="about" class="about">
+     <section id="about" class="about">
         <div class="about-content">
             <h2>About Webpot</h2>
-            <p>We are a team of passionate web developers dedicated to creating exceptional digital experiences. With years of experience in the industry, we've helped hundreds of businesses establish and grow their online presence.</p>
+            <p>We are a team of passionate web developers dedicated to creating exceptional digital experiences. With years of experience in the industry, we've helped multiple businesses establish and grow their online presence.</p>
             <p>Our commitment is simple: deliver high-quality, fast, and reliable web solutions that exceed your expectations. We believe in transparent communication, timely delivery, and ongoing support for all our clients.</p>
 
             <h3 style="color: var(--neon-blue); margin-top: 2rem; margin-bottom: 1rem;">Our Workflow</h3>
@@ -165,6 +71,59 @@
                     <h4>06. Support</h4>
                     <p>Continuous maintenance and updates</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <!-- Starter -->
+            <div class="service-card">
+                <h3>Starter</h3>
+                <p>Perfect for small businesses and individuals</p>
+                <div class="price">2,999 /-</div>
+                <ul class="features">
+                    <li>Upto 5 pages</li>
+                    <li>Responsive Design (Desktop mode only)</li>
+                    <li>Basic SEO</li>
+                    <li>Normal Support (12 hr)</li>
+                    <li>Delivery: 7 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Starter', 2999)">Choose Plan</button>
+            </div>
+
+            <!-- Basic -->
+            <div class="service-card">
+                <h3>Basic</h3>
+                <p>Best For growing Businesses</p>
+                <div class="price">5,999 /-</div>
+                <ul class="features">
+                    <li>Upto 7 pages</li>
+                    <li>Modern Responsive Design</li>
+                    <li>Advanced SEO</li>
+                    <li>Innovative Form Integration</li>
+                    <li>Priority Support (18 hr/day)</li>
+                    <li>Delivery: 10 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Basic', 5999)">Choose Plan</button>
+            </div>
+
+            <!-- Premium -->
+            <div class="service-card">
+                <h3>Premium</h3>
+                <p>For Enterprise and Large Businesses</p>
+                <div class="price">9,999 /-</div>
+                <ul class="features">
+                    <li>Pages per user requirement</li>
+                    <li>Custom Design And animations</li>
+                    <li>Full SEO Optimization</li>
+                    <li>E-Commerce / Blog integration</li>
+                    <li>Dedicated Support (24/7)</li>
+                    <li>Delivery: 15 days</li>
+                </ul>
+                <button class="btn-primary" onclick="selectService('Premium', 9999)">Choose Plan</button>
             </div>
         </div>
     </section>
@@ -198,17 +157,43 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <h3 style="color: var(--neon-blue); margin-bottom: 1rem;">Webpot</h3>
-            <p>Professional Web Development Services</p>
-            <div class="social-links">
-                <a href="#" title="Facebook">f</a>
-                <a href="#" title="Twitter">𝕏</a>
-                <a href="#" title="LinkedIn">in</a>
-                <a href="#" title="Instagram">📷</a>
-                <a href="#" title="Email">@</a>
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="logo.png" alt="Webpot Logo" class="footer-logo-img">
+                    <h3>Webpot</h3>
+                </div>
+                <p>Professional web development solutions.</p>
             </div>
-            <p style="margin-top: 1rem; font-size: 0.9rem;">© 2025 Webpot. All rights reserved.</p>
-            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Email: contact@webpot.com | Phone: +1 (555) 123-4567</p>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="mailto:engagewebpot@gmail.com">📧 engagewebpot@gmail.com</a></li>
+                    <li><a href="tel:+919408191506">📞 +91 9408191506</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Webpot. All rights reserved.</p>
         </div>
     </footer>
 
@@ -222,12 +207,9 @@
                     <label for="service">Select Service</label>
                     <select id="service" name="service" required class="service-select">
                         <option value="">🗂️ Choose a service...</option>
-                        <option value="Static Websites - $299">🎨 Static Websites - $299</option>
-                        <option value="Business Websites - $699">🏢 Business Websites - $699</option>
-                        <option value="E-commerce Websites - $1,299">🛒 E-commerce Websites - $1,299</option>
-                        <option value="Landing Pages - $399">🎯 Landing Pages - $399</option>
-                        <option value="Website Redesign - $899">✨ Website Redesign - $899</option>
-                        <option value="Custom Web Applications - $1,999">⚙️ Custom Web Applications - $1,999</option>
+                        <option value="Starter - 2999 Rs.">🚀 Starter - 2,999 /-</option>
+                        <option value="Basic - 5999 Rs.">📈 Basic - 5,999 /-</option>
+                        <option value="Premium - 9999 Rs.">👑 Premium - 9,999 /-</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -273,6 +255,9 @@
     <div id="successMessage" class="success-message">
         <strong>Success!</strong> Your submission has been received. We'll contact you soon.
     </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" class="scroll-to-top" onclick="scrollToTop()" title="Go to top">↑</button>
 
     <script src="script.js"></script>
 </body>

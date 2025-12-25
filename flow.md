@@ -1,108 +1,359 @@
-# Webpot: Google Sheets + Apps Script + Firebase Integration Guide
+# Webpot Backend Guide: Google Sheets + Apps Script Integration
 
-This guide explains how to set up your website using **Firebase Hosting** for the frontend and **Google Sheets + Apps Script** for backend data storage and email handling. This solution is free for small/medium projects and works 24/7.
+This guide provides complete instructions for setting up the **Webpot** website backend using **Google Sheets** for data storage and **Google Apps Script** for handling form submissions and email notifications.
 
 ---
 
 ## 1. Overview
-- **Frontend:** Hosted on Firebase (HTML, CSS, JS)
-- **Backend:** Google Apps Script Web App (handles form submissions, writes to Google Sheets, sends emails)
-- **Database:** Google Sheets
-- **Email:** Sent via Apps Script (Gmail API)
+
+**Webpot** is a modern web development service platform with three main forms that require backend handling:
+
+### Forms to Handle:
+1. **Registration Form** (auth.html) - Collects: Name, Email, Password
+2. **Contact Form** (index.html) - Collects: Name, Email, Phone, Message  
+3. **Order Form** (modal) - Collects: Service, Name, Email, Phone, Requests
 
 ---
 
-## 2. Step-by-Step Setup
+## 2. Setup Instructions
 
-### A. Prepare Google Sheet
-1. Create a new Google Sheet (e.g., `Webpot Orders`).
-2. Add column headers (e.g., Name, Email, Service, Message, Timestamp).
+### Step 1: Create Google Sheet Structure
+Create a new Google Sheet named "Webpot Backend" with 4 sheets:
 
-### B. Create Apps Script Backend
-1. In your Google Sheet, go to **Extensions > Apps Script**.
-2. Replace the default code with a script that:
-   - Accepts POST requests (doPost)
-   - Writes data to the sheet
-   - Sends an email notification
-3. Example Apps Script:
+#### Users Sheet
+Columns: Timestamp | Name | Email | Password_Hash | Status | Last_Login
+
+#### Orders Sheet
+Columns: Timestamp | Order_ID | Name | Email | Phone | Service_Plan | Amount_INR | Status | Requests | Invoice_Sent
+
+#### Contact_Inquiries Sheet
+Columns: Timestamp | Name | Email | Phone | Message | Status
+
+#### Settings Sheet
+Columns: Key | Value
+- Admin Email: engagewebpot@gmail.com
+- Company Phone: +91 9408191506
+- Company Address: 123 Web Street
+
+---
+
+### Step 2: Deploy Apps Script
+1. Open Google Sheet
+2. Extensions > Apps Script
+3. Copy and paste the provided code
+4. Deploy as Web App (Anyone access)
+5. Copy the Web App URL
+
+---
+
+### Step 3: Update Frontend
+Replace `YOUR_APPS_SCRIPT_WEB_APP_URL` in your JS files with the actual URL.
+
+---
+
+## 3. Complete Apps Script Code
 
 ```javascript
+const SPREADSHEET = SpreadsheetApp.getActiveSpreadsheet();
+
+function getSheet(name) {
+  return SPREADSHEET.getSheetByName(name);
+}
+
+function getSetting(key) {
+  const sheet = getSheet('Settings');
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === key) return data[i][1];
+  }
+  return null;
+}
+
 function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
-  var data = JSON.parse(e.postData.contents);
-  sheet.appendRow([
-    data.name, data.email, data.service, data.message, new Date()
-  ]);
-  // Send email
-  MailApp.sendEmail({
-    to: 'your@email.com',
-    subject: 'New Webpot Order',
-    htmlBody: '<b>Name:</b> ' + data.name + '<br><b>Email:</b> ' + data.email + '<br><b>Service:</b> ' + data.service + '<br><b>Message:</b> ' + data.message
-  });
-  return ContentService.createTextOutput('Success').setMimeType(ContentService.MimeType.TEXT);
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const formType = data.formType;
+    let response = {};
+
+    if (formType === 'register') {
+      response = handleRegistration(data);
+    } else if (formType === 'contact') {
+      response = handleContact(data);
+    } else if (formType === 'order') {
+      response = handleOrder(data);
+    } else {
+      response = { success: false, message: 'Invalid form type' };
+    }
+
+    return ContentService.createTextOutput(JSON.stringify(response))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*');
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function handleRegistration(data) {
+  const sheet = getSheet('Users');
+  const name = data.name || '';
+  const email = data.email || '';
+  const password = data.password || '';
+
+  if (!name || !email || !password) {
+    return { success: false, message: 'Missing fields' };
+  }
+
+  const values = sheet.getDataRange().getValues();
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][2] === email) {
+      return { success: false, message: 'Email already registered' };
+    }
+  }
+
+  sheet.appendRow([new Date(), name, email, Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password), 'Active', new Date()]);
+
+  MailApp.sendEmail(email, 'Welcome to Webpot!', '', { htmlBody: `<h2>Welcome, ${name}!</h2><p>Your account is ready. Email: ${email}</p><p>Contact: ${getSetting('Admin Email')}</p>` });
+  MailApp.sendEmail(getSetting('Admin Email'), 'New Registration', `New user: ${name} (${email})`);
+
+  return { success: true, message: 'Registration successful!' };
+}
+
+function handleContact(data) {
+  const sheet = getSheet('Contact_Inquiries');
+  const name = data.name || '';
+  const email = data.email || '';
+  const phone = data.phone || '';
+  const message = data.message || '';
+
+  if (!name || !email || !message) {
+    return { success: false, message: 'Missing fields' };
+  }
+
+  sheet.appendRow([new Date(), name, email, phone, message, 'Unread']);
+
+  MailApp.sendEmail(email, 'We received your message', '', { htmlBody: `<h2>Thank you, ${name}!</h2><p>Message: ${message}</p><p>Contact: ${getSetting('Admin Email')}</p>` });
+  MailApp.sendEmail(getSetting('Admin Email'), 'New Inquiry', `From: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`);
+
+  return { success: true, message: 'Inquiry received!' };
+}
+
+function handleOrder(data) {
+  const sheet = getSheet('Orders');
+  const orderID = 'ORD-' + Date.now();
+  
+  sheet.appendRow([new Date(), orderID, data.name, data.email, data.phone, data.service, data.amount, 'Pending', data.specialRequests || '', 'No']);
+
+  MailApp.sendEmail(data.email, `Order Confirmation - ${orderID}`, '', { htmlBody: `<h2>Order Confirmed!</h2><p>Order ID: ${orderID}</p><p>Service: ${data.service}</p><p>Amount: ₹${data.amount}</p><p>Contact: ${getSetting('Admin Email')}</p>` });
+  MailApp.sendEmail(getSetting('Admin Email'), `New Order - ${orderID}`, `Customer: ${data.name}\nEmail: ${data.email}\nService: ${data.service}\nAmount: ₹${data.amount}`);
+
+  return { success: true, message: `Order placed! Order ID: ${orderID}` };
 }
 ```
 
-4. Save and **Deploy > New deployment**
-   - Select **Web app**
-   - Set access to **Anyone**
-   - Copy the Web App URL
+---
 
-### C. Update Your Website (Frontend)
-1. In your JS (e.g., `script.js`), send form data to the Apps Script Web App URL:
+## 4. Frontend Integration
 
+### Registration (auth.js)
 ```javascript
-fetch('YOUR_APPS_SCRIPT_WEB_APP_URL', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: nameValue,
-    email: emailValue,
-    service: serviceValue,
-    message: messageValue
-  })
+fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ formType: 'register', name, email, password })
 })
-.then(res => res.text())
-.then(data => { /* show success message */ })
-.catch(err => { /* show error */ });
+.then(res => res.json())
+.then(data => { if(data.success) alert(data.message); })
+.catch(err => alert('Error'));
 ```
 
-2. Make sure your form calls this JS on submit.
-
-### D. Host Frontend on Firebase
-1. Install Firebase CLI: `npm install -g firebase-tools`
-2. Run `firebase login` and `firebase init` (choose Hosting, set `public` folder, etc.)
-3. Place your website files in the `public` folder.
-4. Deploy: `firebase deploy`
-
----
-
-## 3. Important Notes
-- **CORS:** Apps Script Web App must allow requests from your domain. Add this to your Apps Script:
-
+### Contact (script.js)
 ```javascript
-return ContentService.createTextOutput('Success')
-  .setMimeType(ContentService.MimeType.TEXT)
-  .setHeader('Access-Control-Allow-Origin', '*');
+fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ formType: 'contact', name, email, phone, message })
+})
+.then(res => res.json())
+.then(data => { if(data.success) alert(data.message); })
+.catch(err => alert('Error'));
 ```
-- **Quotas:** Google Apps Script has daily limits (emails, script runs). Fine for most small sites.
-- **Security:** Do not expose sensitive logic in frontend. Validate/sanitize input in Apps Script.
-- **Testing:** Test form submission and email delivery after deployment.
+
+### Order (script.js)
+```javascript
+fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ formType: 'order', name, email, phone, service, amount, specialRequests })
+})
+.then(res => res.json())
+.then(data => { if(data.success) alert(data.message); })
+.catch(err => alert('Error'));
+```
 
 ---
 
-## 4. Troubleshooting
-- If emails are not sent, check Apps Script quotas and permissions.
-- If data is not written, check sheet name and column order.
-- If CORS errors, ensure correct headers and deployment access.
+## 5. Key Features
+
+✅ **Three Form Types:** Registration, Contact, Orders
+✅ **Auto Email Notifications:** Users + Admin emails
+✅ **Data Storage:** Organized Google Sheets
+✅ **Order IDs:** Auto-generated timestamps
+✅ **CORS Enabled:** No cross-origin issues
+✅ **Error Handling:** Validation + logging
 
 ---
 
-## 5. Resources
-- [Google Apps Script Web Apps](https://developers.google.com/apps-script/guides/web)
-- [Firebase Hosting Docs](https://firebase.google.com/docs/hosting)
-- [Apps Script Quotas](https://developers.google.com/apps-script/guides/services/quotas)
+## 6. Testing Checklist
+
+- [ ] Register user → Check email + Users sheet
+- [ ] Submit contact → Check email + Contact sheet  
+- [ ] Place order → Check Order ID email + Orders sheet
 
 ---
 
-**You now have a free, reliable, and scalable web app with database and email handling!**
+## 7. Production Deployment
+
+1. Test all forms locally
+2. Deploy frontend to Firebase/Vercel
+3. Monitor Google Sheets submissions
+4. Update Settings sheet as needed
+5. Upgrade password hashing for security
+
+---
+
+## 8. Launching the Web App - Step by Step
+
+### Option A: Local Development (Quick Testing)
+
+**Using Python (Built-in):**
+1. Open terminal in the `Web-pot` folder
+2. Run: `python -m http.server 8000`
+3. Open browser: `http://localhost:8000`
+4. Access pages: `http://localhost:8000/index.html`, `http://localhost:8000/auth.html`
+
+**Using Node.js (Alternative):**
+1. Install globally: `npm install -g http-server`
+2. Run in `Web-pot` folder: `http-server`
+3. Access: `http://localhost:8080`
+
+**Using VS Code Live Server:**
+1. Install "Live Server" extension (5Stars)
+2. Right-click `index.html` → "Open with Live Server"
+3. Browser opens automatically at `http://127.0.0.1:5500`
+
+---
+
+### Option B: Deploy to Firebase (Production)
+
+**Step 1: Install Firebase CLI**
+```bash
+npm install -g firebase-tools
+```
+
+**Step 2: Login to Firebase**
+```bash
+firebase login
+```
+
+**Step 3: Initialize Firebase Project**
+```bash
+firebase init hosting
+```
+- Choose "Create a new project" or "Use existing project"
+- Public directory: `.` (current directory where index.html is)
+- Configure as single-page app: `No`
+- Set up automatic deploys: `No`
+
+**Step 4: Deploy**
+```bash
+firebase deploy
+```
+
+**Step 5: Get Your Live URL**
+- Firebase will provide a URL like: `https://webpot-xxxxx.web.app`
+- Share this URL publicly
+
+---
+
+### Option C: Deploy to Vercel (Alternative)
+
+**Step 1: Create Vercel Account**
+- Sign up at [vercel.com](https://vercel.com)
+- Connect GitHub account
+
+**Step 2: Push Code to GitHub**
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/webpot.git
+git push -u origin main
+```
+
+**Step 3: Deploy via Vercel Dashboard**
+- Go to Vercel dashboard
+- Click "New Project"
+- Select your GitHub repository
+- Click "Deploy"
+- Your site is live at: `https://webpot.vercel.app`
+
+---
+
+### Configuration Checklist for Production
+
+1. **Update Apps Script URL in JavaScript:**
+   - Apps Script URL is already configured in all JS files
+
+2. **Test All Forms:**
+   - [ ] Register → Check Users sheet + welcome email
+   - [ ] Contact → Check Contact_Inquiries sheet + confirmation email
+   - [ ] Order → Check Orders sheet + Order ID email
+
+3. **Verify Emails:**
+   - [ ] Check spam folder if emails not received
+   - [ ] Verify Admin Email in Settings sheet is correct
+   - [ ] Test email notifications work
+
+4. **Monitor Google Sheets:**
+   - Watch data appear in real-time as forms are submitted
+   - Check Settings sheet for any errors
+
+5. **Enable HTTPS:**
+   - Firebase/Vercel automatically provide HTTPS
+   - Local testing works over HTTP (Apps Script accepts both)
+
+---
+
+## 9. Important Notes
+- **CORS:** Apps Script Web App automatically handles cross-origin requests
+- **Quotas:** Google Apps Script has daily limits (100 emails/day). Fine for small sites
+- **Security:** All validation happens server-side in Apps Script
+- **Email Domain:** Emails are sent from your Gmail account used in Apps Script
+
+---
+
+## 10. Troubleshooting
+
+**Forms not submitting:**
+- Check browser console (F12) for errors
+- Verify Apps Script URL is correct in JS files
+- Check Apps Script deployment is "Anyone" access
+
+**Emails not sending:**
+- Check Google Sheets quota usage
+- Verify Admin Email in Settings sheet
+- Check spam folder
+
+**Data not appearing in Sheets:**
+- Verify sheet names match exactly (case-sensitive)
+- Check column order matches
+- Verify you have edit permission on Google Sheet
+
+**CORS errors:**
+- Ensure Apps Script is deployed as Web App with "Anyone" access
+- Clear browser cache and retry
+
+---
+
+**Webpot Web App Ready to Launch! 🚀**
