@@ -54,7 +54,7 @@ function handleCredentialResponse(response) {
 window.onload = function() {
     if (window.google) {
         google.accounts.id.initialize({
-            client_id: 'YOUR_GOOGLE_CLIENT_ID'
+            client_id: '602785019830-1r8laqtcrshl8m1dlktdeiisdfmtvdpt.apps.googleusercontent.com'
         });
     }
 };
