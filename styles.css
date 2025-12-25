@@ -213,6 +213,54 @@ nav a:hover {
     text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
 }
 
+/* User Profile */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-right: 1rem;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-blue);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.profile-pic:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+}
+
+.user-name {
+    color: var(--neon-blue);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.logout-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 0, 153, 0.1);
+    border: 1px solid var(--neon-pink);
+    border-radius: 6px;
+    color: var(--neon-pink);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 0, 153, 0.2);
+    box-shadow: 0 0 15px rgba(255, 0, 153, 0.4);
+    transform: translateY(-2px);
+}
+
 /* Mobile Menu Toggle */
 .menu-toggle {
     display: none;

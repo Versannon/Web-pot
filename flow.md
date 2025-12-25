@@ -157,7 +157,7 @@ function handleOrder(data) {
 
 ### Registration (auth.js)
 ```javascript
-fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+fetch('https://script.google.com/macros/s/AKfycbxCIYznFyqWykBAGcNvj9wtjjE9zCakuwiDANuYJy-p3ST0ggF05fZfshZLkHhUWqZb/exec', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ formType: 'register', name, email, password })
@@ -169,7 +169,7 @@ fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3
 
 ### Contact (script.js)
 ```javascript
-fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+fetch('https://script.google.com/macros/s/AKfycbxCIYznFyqWykBAGcNvj9wtjjE9zCakuwiDANuYJy-p3ST0ggF05fZfshZLkHhUWqZb/exec', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ formType: 'contact', name, email, phone, message })
@@ -181,7 +181,7 @@ fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3
 
 ### Order (script.js)
 ```javascript
-fetch('https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec', {
+fetch('https://script.google.com/macros/s/AKfycbxCIYznFyqWykBAGcNvj9wtjjE9zCakuwiDANuYJy-p3ST0ggF05fZfshZLkHhUWqZb/exec', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ formType: 'order', name, email, phone, service, amount, specialRequests })

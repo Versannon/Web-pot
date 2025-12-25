@@ -22,6 +22,11 @@
                 <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
                 <li><a href="auth.html" onclick="closeMenu()">Login</a></li>
             </ul>
+            <div class="user-profile" id="userProfile">
+                <img id="profilePic" alt="Profile" class="profile-pic" style="display:none;">
+                <span id="userNameDisplay" class="user-name"></span>
+                <button class="logout-btn" id="logoutBtn" onclick="logoutUser()" style="display:none;">Logout</button>
+            </div>
             <button class="cta-btn" onclick="openOrderModal()">Get Started</button>
         </nav>
     </header>
@@ -235,16 +240,6 @@
                 <div class="form-group">
                     <label for="deadline">Desired Deadline</label>
                     <input type="date" id="deadline" name="deadline">
-                </div>
-                <div class="form-group">
-                    <label for="budget">Budget Range</label>
-                    <select id="budget" name="budget" class="budget-select">
-                        <option value="">💰 Select budget range</option>
-                        <option value="Under $500">👉 Under $500</option>
-                        <option value="$500 - $1,000">👉 $500 - $1,000</option>
-                        <option value="$1,000 - $2,000">👉 $1,000 - $2,000</option>
-                        <option value="$2,000+">👉 $2,000+</option>
-                    </select>
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Submit Order</button>
             </form>

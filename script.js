@@ -32,8 +32,49 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Display user profile when logged in
+function displayUserProfile() {
+    const userName = localStorage.getItem('webpotUserName');
+    const userEmail = localStorage.getItem('webpotUserEmail');
+    const userProfilePic = localStorage.getItem('webpotUserProfilePic');
+    const isLoggedIn = localStorage.getItem('webpotUserLoggedIn');
+    
+    const profileDiv = document.getElementById('userProfile');
+    const profilePic = document.getElementById('profilePic');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (isLoggedIn && userName) {
+        // Show profile picture if available
+        if (userProfilePic) {
+            profilePic.src = userProfilePic;
+            profilePic.style.display = 'block';
+            profilePic.title = userName;
+        }
+        
+        userNameDisplay.textContent = userName.split(' ')[0]; // Show first name
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        profilePic.style.display = 'none';
+        userNameDisplay.textContent = '';
+        logoutBtn.style.display = 'none';
+    }
+}
+
+// Logout user
+function logoutUser() {
+    localStorage.removeItem('webpotUserLoggedIn');
+    localStorage.removeItem('webpotUserEmail');
+    localStorage.removeItem('webpotUserName');
+    localStorage.removeItem('webpotUserProfilePic');
+    
+    displayUserProfile();
+    window.location.href = 'index.html';
+}
+
 // Observe service cards on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+    displayUserProfile(); // Show user profile on page load
     const serviceCards = document.querySelectorAll('.service-card');
     serviceCards.forEach(card => {
         observer.observe(card);
@@ -81,7 +122,9 @@ function submitOrder(event) {
     const name = document.getElementById('oname').value;
     const email = document.getElementById('oemail').value;
     const phone = document.getElementById('ophone').value;
-    const requests = document.getElementById('requests') ? document.getElementById('requests').value : '';
+    const details = document.getElementById('details') ? document.getElementById('details').value : '';
+    
+    console.log('Form values:', { service, name, email, phone, details });
     
     // Extract amount from service selection
     let amount = 0;
@@ -89,40 +132,51 @@ function submitOrder(event) {
     else if (service.includes('5999')) amount = 5999;
     else if (service.includes('9999')) amount = 9999;
     
+    console.log('Extracted amount:', amount);
+    
     if (!service || !name || !email || !amount) {
         alert('Please fill in all required fields');
+        console.error('Missing fields:', { service, name, email, amount });
         return;
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSwzGN4w5VycG1KA-PivF_IjDf6C34f1_HO5DSi3G5IRXlLb8I-ri59BlWuLg7_Cxz/exec';
+    
+    const payload = {
+        formType: 'order',
+        service: service,
+        name: name,
+        email: email,
+        phone: phone,
+        amount: amount,
+        specialRequests: details
+    };
+    
+    console.log('Sending payload:', payload);
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            formType: 'order',
-            service: service,
-            name: name,
-            email: email,
-            phone: phone,
-            amount: amount,
-            specialRequests: requests
-        })
+        body: JSON.stringify(payload)
     })
-    .then(res => res.json())
+    .then(res => {
+        console.log('Response status:', res.status);
+        return res.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             alert(data.message);
             closeOrderModal();
-            event.target.reset();
+            document.getElementById('orderForm').reset();
         } else {
             alert('Error: ' + data.message);
         }
     })
     .catch(err => {
-        console.error('Error:', err);
-        alert('Failed to place order. Please try again.');
+        console.error('Full error:', err);
+        alert('Failed to place order. Please try again. Check console for details.');
     });
 }
 
@@ -143,7 +197,7 @@ function submitForm(event) {
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCIYznFyqWykBAGcNvj9wtjjE9zCakuwiDANuYJy-p3ST0ggF05fZfshZLkHhUWqZb/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',

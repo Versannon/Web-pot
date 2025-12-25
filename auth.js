@@ -10,7 +10,7 @@ function handleCredentialResponse(response) {
     const userData = JSON.parse(jsonPayload);
     
     // Send to Google Apps Script backend as registration
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKjU_LFzfrE6lLLy03szZ-7XHtS2xgawBAUFwVpyCCq5NdgsPhnzXsbb3nO4bMIkAm/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -28,6 +28,10 @@ function handleCredentialResponse(response) {
         localStorage.setItem('webpotUserLoggedIn', 'true');
         localStorage.setItem('webpotUserEmail', userData.email);
         localStorage.setItem('webpotUserName', userData.name);
+        // Store Google profile picture if available
+        if (userData.picture) {
+            localStorage.setItem('webpotUserProfilePic', userData.picture);
+        }
         
         showSuccessModal('Welcome!', `Welcome ${userData.name}! You have been signed in.`);
         
@@ -42,6 +46,10 @@ function handleCredentialResponse(response) {
         localStorage.setItem('webpotUserLoggedIn', 'true');
         localStorage.setItem('webpotUserEmail', userData.email);
         localStorage.setItem('webpotUserName', userData.name);
+        // Store Google profile picture if available
+        if (userData.picture) {
+            localStorage.setItem('webpotUserProfilePic', userData.picture);
+        }
         
         showSuccessModal('Welcome!', `Welcome ${userData.name}!`);
         setTimeout(() => {
@@ -49,6 +57,7 @@ function handleCredentialResponse(response) {
         }, 2000);
     });
 }
+
 
 // Initialize Google Sign-In on page load
 window.onload = function() {
@@ -148,7 +157,7 @@ function handleRegister(event) {
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQQRc_0FXAqZuLqvNymNMdkhG4lu7DX3jX9pkrT_aawwbbmmaZ0NNs7q0gpGWCymlO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSwzGN4w5VycG1KA-PivF_IjDf6C34f1_HO5DSi3G5IRXlLb8I-ri59BlWuLg7_Cxz/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -166,10 +175,18 @@ function handleRegister(event) {
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', email);
             localStorage.setItem('webpotUserName', name);
+            // Create a simple avatar using initials or default placeholder
+            const initials = name.split(' ').map(n => n[0]).join('');
+            localStorage.setItem('webpotUserInitials', initials);
             
             showSuccessModal('Account Created!', data.message);
             document.getElementById('registerForm').reset();
             updatePasswordStrength('');
+            
+            // Redirect to home after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
         } else {
             alert('Error: ' + data.message);
         }
