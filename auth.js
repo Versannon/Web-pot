@@ -460,7 +460,8 @@ function loadPrivacyContent() {
 function setupScrollDetection(containerId, modalType) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    
+}
+
 window.addEventListener('click', function(event) {
     const termsModal = document.getElementById('termsModal');
     const privacyModal = document.getElementById('privacyModal');
@@ -470,5 +471,25 @@ window.addEventListener('click', function(event) {
     }
     if (event.target === privacyModal) {
         closePrivacyModal();
+    }
+});
+
+// Update form submission button text
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    if (loginForm) {
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Sign in';
+        }
+    }
+    
+    if (registerForm) {
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Sign up';
+        }
     }
 });
