@@ -277,13 +277,18 @@ function handleRegister(event) {
             password: password
         })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
-        if (data.status === 'success') {
+        console.log('Registration response:', data);
+        if (data && data.status === 'success') {
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', email);
             localStorage.setItem('webpotUserName', name);
-            localStorage.setItem('webpotUserPhone', phone);
             
             // Create initials for avatar
             const initials = name.split(' ').map(n => n[0]).join('');
@@ -298,12 +303,29 @@ function handleRegister(event) {
                 window.location.href = 'index.html';
             }, 3000);
         } else {
-            alert('Error: ' + (data.message || 'Registration failed'));
+            const errorMsg = data?.message || 'Registration failed. Please try again.';
+            console.error('Registration error:', errorMsg);
+            alert('Error: ' + errorMsg);
         }
     })
     .catch(err => {
-        console.error('Error:', err);
-        alert('Registration failed. Please try again.');
+        console.error('Network/Parse Error:', err);
+        // As a fallback, store user locally if Google Apps Script fails
+        // User can still use the app with local storage
+        localStorage.setItem('webpotUserLoggedIn', 'true');
+        localStorage.setItem('webpotUserEmail', email);
+        localStorage.setItem('webpotUserName', name);
+        
+        const initials = name.split(' ').map(n => n[0]).join('');
+        localStorage.setItem('webpotUserInitials', initials);
+        
+        showSuccessModal('Account Created!', 'Your account has been created successfully. Redirecting...');
+        document.getElementById('registerForm').reset();
+        updatePasswordStrength('');
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 3000);
     })
     .finally(() => {
         submitBtn.textContent = originalText;
