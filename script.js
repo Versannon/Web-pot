@@ -147,7 +147,7 @@ function submitOrder(event) {
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynlLRxNakaA-CxiB0goHg1dzS1Ss6eIlm1WOBS3CitnUXJlCPZtgwm5f3p5di8QRSv/exec';
     
     const payload = {
         formType: 'order',
@@ -205,7 +205,7 @@ function submitForm(event) {
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynlLRxNakaA-CxiB0goHg1dzS1Ss6eIlm1WOBS3CitnUXJlCPZtgwm5f3p5di8QRSv/exec';
     
     // Show loading state
     const submitBtn = event.target.querySelector('button[type="submit"]');
