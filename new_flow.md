@@ -15,10 +15,9 @@ This guide explains how to turn a standard Google Sheet into a working database 
 | A | Date |
 | B | Name |
 | C | Email |
-| D | Phone |
-| E | Password |
-| F | Status |
-| G | Created |
+| D | Password |
+| E | Status |
+| F | Created |
 
 ### Sheet 2: Orders Sheet
 | Column | Header |
@@ -127,13 +126,10 @@ function handleUserRegistration(data) {
     const usersSheet = getSheet('Users Sheet');
     const values = usersSheet.getDataRange().getValues();
     
-    // Check if user already exists (by email or phone)
+    // Check if user already exists
     for (let i = 1; i < values.length; i++) {
       if (values[i][2] === data.email) { // Column C is Email
         return { status: 'error', message: 'Email already exists' };
-      }
-      if (values[i][3] === data.phone) { // Column D is Phone
-        return { status: 'error', message: 'Phone number already exists' };
       }
     }
     
@@ -143,10 +139,9 @@ function handleUserRegistration(data) {
       timestamp, // Column A: Date
       data.name, // Column B: Name
       data.email, // Column C: Email
-      data.phone, // Column D: Phone
-      data.password, // Column E: Password
-      'active', // Column F: Status
-      timestamp // Column G: Created
+      data.password, // Column D: Password
+      'active', // Column E: Status
+      timestamp // Column F: Created
     ]);
     
     return { status: 'success', message: 'User registered successfully' };
@@ -161,30 +156,17 @@ function handleUserLogin(data) {
     const usersSheet = getSheet('Users Sheet');
     const values = usersSheet.getDataRange().getValues();
     
-    // Determine login type (email or phone)
-    const loginType = data.loginType || 'email';
-    const loginValue = loginType === 'email' ? data.email : data.phone;
-    
     // Find user and validate password
     for (let i = 1; i < values.length; i++) {
-      let isMatched = false;
-      
-      if (loginType === 'email' && values[i][2] === loginValue) { // Column C is Email
-        isMatched = true;
-      } else if (loginType === 'phone' && values[i][3] === loginValue) { // Column D is Phone
-        isMatched = true;
-      }
-      
-      if (isMatched) {
-        if (values[i][4] === data.password) { // Column E is Password
+      if (values[i][2] === data.email) { // Column C is Email
+        if (values[i][3] === data.password) { // Column D is Password
           return { 
             status: 'success', 
             message: 'Login successful',
             user: {
               name: values[i][1],
               email: values[i][2],
-              phone: values[i][3],
-              status: values[i][5]
+              status: values[i][4]
             }
           };
         } else {

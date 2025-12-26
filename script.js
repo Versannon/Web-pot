@@ -43,6 +43,7 @@ function displayUserProfile() {
     const profilePic = document.getElementById('profilePic');
     const userNameDisplay = document.getElementById('userNameDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
+    const loginLink = document.querySelector('a[href="auth.html"]');
     
     if (isLoggedIn && userName) {
         // Show profile picture if available
@@ -54,10 +55,20 @@ function displayUserProfile() {
         
         userNameDisplay.textContent = userName.split(' ')[0]; // Show first name
         logoutBtn.style.display = 'inline-block';
+        
+        // Hide login link
+        if (loginLink) {
+            loginLink.style.display = 'none';
+        }
     } else {
         profilePic.style.display = 'none';
         userNameDisplay.textContent = '';
         logoutBtn.style.display = 'none';
+        
+        // Show login link
+        if (loginLink) {
+            loginLink.style.display = 'inline';
+        }
     }
 }
 

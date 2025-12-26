@@ -167,25 +167,11 @@ function updatePasswordStrength(password) {
 function handleLogin(event) {
     event.preventDefault();
     
-    // Determine which login method is being used
-    const emailTab = document.querySelector('.login-tab[data-tab="email"]');
-    const phoneTab = document.querySelector('.login-tab[data-tab="phone"]');
-    const isEmailLogin = emailTab && emailTab.classList.contains('active');
-    
-    let loginValue, loginType;
-    
-    if (isEmailLogin) {
-        loginValue = document.getElementById('login-email')?.value;
-        loginType = 'email';
-    } else {
-        loginValue = document.getElementById('login-phone')?.value;
-        loginType = 'phone';
-    }
-    
+    const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
-    if (!loginValue || !password) {
-        alert(`Please fill in ${loginType} and password`);
+    if (!email || !password) {
+        alert('Please fill in all fields');
         return;
     }
     
@@ -195,7 +181,7 @@ function handleLogin(event) {
     submitBtn.textContent = 'Logging in...';
     submitBtn.disabled = true;
     
-    // First, check if user exists
+    // Send to Google Apps Script backend
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
     
     fetch(APPS_SCRIPT_URL, {
@@ -203,19 +189,17 @@ function handleLogin(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             formType: 'login',
-            loginType: loginType,
-            [loginType]: loginValue,
+            email: email,
             password: password
         })
     })
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            // User exists and password is correct
+            // User found and password is correct
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', data.user.email);
             localStorage.setItem('webpotUserName', data.user.name);
-            localStorage.setItem('webpotUserPhone', data.user.phone || '');
             
             // Create initials for avatar
             const initials = data.user.name.split(' ').map(n => n[0]).join('');
@@ -229,39 +213,26 @@ function handleLogin(event) {
             }, 2000);
         } else if (data.status === 'user_not_found') {
             // User doesn't exist - redirect to registration
-            alert(`No account found with this ${loginType}. Please register first.`);
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
             
-            // Show registration form and populate email if available
+            alert('No account found with this email. Please create a new account.');
+            
+            // Switch to registration form and pre-fill email
             toggleForms(event);
-            
-            if (loginType === 'email') {
-                const registerEmail = document.getElementById('register-email');
-                if (registerEmail) {
-                    registerEmail.value = loginValue;
-                }
-            } else if (loginType === 'phone') {
-                const registerPhone = document.getElementById('register-phone');
-                if (registerPhone) {
-                    registerPhone.value = loginValue;
-                }
-            }
-            
-            // Focus on name field for registration
             setTimeout(() => {
-                const nameField = document.getElementById('register-name');
-                if (nameField) {
-                    nameField.focus();
-                }
+                document.getElementById('register-email').value = email;
+                document.getElementById('register-name').focus();
             }, 300);
         } else {
             alert('Login failed: ' + (data.message || 'Invalid credentials'));
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         }
     })
     .catch(err => {
         console.error('Error:', err);
         alert('Login failed. Please try again.');
-    })
-    .finally(() => {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     });
@@ -273,7 +244,6 @@ function handleRegister(event) {
     
     const name = document.getElementById('register-name').value;
     const email = document.getElementById('register-email').value;
-    const phone = document.getElementById('register-phone').value;
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
     
@@ -283,7 +253,7 @@ function handleRegister(event) {
         return;
     }
     
-    if (!name || !email || !phone || !password) {
+    if (!name || !email || !password) {
         alert('Please fill in all fields');
         return;
     }
@@ -304,7 +274,6 @@ function handleRegister(event) {
             formType: 'register',
             name: name,
             email: email,
-            phone: phone,
             password: password
         })
     })
