@@ -126,14 +126,58 @@ function handleLogin(event) {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
-    // Simulate login
-    console.log('Login attempt:', { email, password });
+    if (!email || !password) {
+        alert('Please fill in all fields');
+        return;
+    }
     
-    // Store login status in localStorage
-    localStorage.setItem('webpotUserLoggedIn', 'true');
-    localStorage.setItem('webpotUserEmail', email);
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Logging in...';
+    submitBtn.disabled = true;
     
-    showSuccessModal('Welcome!', 'You have successfully signed in.');
+    // Send to Google Apps Script backend
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
+    
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            formType: 'login',
+            email: email,
+            password: password
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            localStorage.setItem('webpotUserLoggedIn', 'true');
+            localStorage.setItem('webpotUserEmail', data.user.email);
+            localStorage.setItem('webpotUserName', data.user.name);
+            
+            // Create initials for avatar
+            const initials = data.user.name.split(' ').map(n => n[0]).join('');
+            localStorage.setItem('webpotUserInitials', initials);
+            
+            showSuccessModal('Welcome!', `Welcome back, ${data.user.name}!`);
+            
+            // Redirect to home after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Login failed. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
 }
 
 // Handle registration form submission
@@ -156,8 +200,14 @@ function handleRegister(event) {
         return;
     }
     
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Creating account...';
+    submitBtn.disabled = true;
+    
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSwzGN4w5VycG1KA-PivF_IjDf6C34f1_HO5DSi3G5IRXlLb8I-ri59BlWuLg7_Cxz/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -171,15 +221,16 @@ function handleRegister(event) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
+        if (data.status === 'success') {
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', email);
             localStorage.setItem('webpotUserName', name);
-            // Create a simple avatar using initials or default placeholder
+            
+            // Create initials for avatar
             const initials = name.split(' ').map(n => n[0]).join('');
             localStorage.setItem('webpotUserInitials', initials);
             
-            showSuccessModal('Account Created!', data.message);
+            showSuccessModal('Account Created!', 'Your account has been created successfully. Redirecting...');
             document.getElementById('registerForm').reset();
             updatePasswordStrength('');
             
@@ -194,6 +245,10 @@ function handleRegister(event) {
     .catch(err => {
         console.error('Error:', err);
         alert('Registration failed. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     });
 }
 
@@ -220,7 +275,7 @@ document.addEventListener('click', function(event) {
     const modal = document.getElementById('successModal');
     const content = document.querySelector('.success-content');
     
-    if (modal.classList.contains('show') && !content.contains(event.target)) {
+    if (modal && modal.classList.contains('show') && content && !content.contains(event.target)) {
         closeSuccess();
     }
 });
@@ -345,34 +400,8 @@ function loadPrivacyContent() {
 // Setup scroll detection to auto-open next modal or check checkbox
 function setupScrollDetection(containerId, modalType) {
     const container = document.getElementById(containerId);
-    let hasReachedBottom = false;
+    if (!container) return;
     
-    container.addEventListener('scroll', function() {
-        // Check if scrolled to bottom (with 50px tolerance)
-        if (container.scrollHeight - container.scrollTop <= container.clientHeight + 50) {
-            if (!hasReachedBottom) {
-                hasReachedBottom = true;
-                
-                if (modalType === 'terms') {
-                    // User finished reading terms, auto-close and open privacy
-                    closeTermsModal();
-                    setTimeout(() => showPrivacyModal(), 300);
-                } else if (modalType === 'privacy') {
-                    // User finished reading privacy, auto-close and check checkbox
-                    closePrivacyModal();
-                    const checkbox = document.getElementById('termsCheckbox');
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-                }
-            }
-        } else {
-            hasReachedBottom = false;
-        }
-    });
-}
-
-// Close modals when clicking outside
 window.addEventListener('click', function(event) {
     const termsModal = document.getElementById('termsModal');
     const privacyModal = document.getElementById('privacyModal');

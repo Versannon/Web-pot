@@ -114,7 +114,7 @@ function selectService(serviceName, price) {
     document.getElementById('service').value = serviceName + ' - $' + price;
 }
 
-// Submit Order Form
+// Submit Order Form to Google Sheets
 function submitOrder(event) {
     event.preventDefault();
     
@@ -124,67 +124,64 @@ function submitOrder(event) {
     const phone = document.getElementById('ophone').value;
     const details = document.getElementById('details') ? document.getElementById('details').value : '';
     
-    console.log('Form values:', { service, name, email, phone, details });
-    
     // Extract amount from service selection
     let amount = 0;
     if (service.includes('2999')) amount = 2999;
     else if (service.includes('5999')) amount = 5999;
     else if (service.includes('9999')) amount = 9999;
     
-    console.log('Extracted amount:', amount);
-    
-    if (!service || !name || !email || !amount) {
+    if (!service || !name || !email || !phone || !amount) {
         alert('Please fill in all required fields');
-        console.error('Missing fields:', { service, name, email, amount });
         return;
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSwzGN4w5VycG1KA-PivF_IjDf6C34f1_HO5DSi3G5IRXlLb8I-ri59BlWuLg7_Cxz/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
     
     const payload = {
         formType: 'order',
-        service: service,
         name: name,
         email: email,
         phone: phone,
+        service: service,
         amount: amount,
-        specialRequests: details
+        details: details
     };
     
-    console.log('Sending payload:', payload);
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => {
-        console.log('Response status:', res.status);
-        return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
-        console.log('Response data:', data);
-        if (data.success) {
-            alert(data.message);
+        if (data.status === 'success') {
+            showSuccessModal('Order Submitted!', 'Your order has been received. Order ID: ' + data.orderId);
             closeOrderModal();
             document.getElementById('orderForm').reset();
         } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + (data.message || 'Failed to submit order'));
         }
     })
     .catch(err => {
-        console.error('Full error:', err);
-        alert('Failed to place order. Please try again. Check console for details.');
+        console.error('Error:', err);
+        alert('Failed to place order. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     });
 }
 
-// Submit Contact Form
+// Submit Contact Form to Google Sheets
 function submitForm(event) {
     event.preventDefault();
-    
-    if (!checkLoginStatus()) return;
     
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -197,7 +194,13 @@ function submitForm(event) {
     }
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCIYznFyqWykBAGcNvj9wtjjE9zCakuwiDANuYJy-p3ST0ggF05fZfshZLkHhUWqZb/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
+    
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -212,27 +215,53 @@ function submitForm(event) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            alert(data.message);
+        if (data.status === 'success') {
+            showSuccessModal('Message Sent!', 'Thank you for contacting us. We will get back to you soon.');
             event.target.reset();
         } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + (data.message || 'Failed to send message'));
         }
     })
     .catch(err => {
         console.error('Error:', err);
         alert('Failed to send message. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     });
+}
+
+// Show Success Modal
+function showSuccessModal(title, message) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>${title}</h2>
+            <p>${message}</p>
+            <button onclick="this.closest('.modal-overlay').remove()" class="btn-primary">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        if (modal.parentElement) {
+            modal.remove();
+        }
+    }, 4000);
 }
 
 // Show Success Message
 function showSuccessMessage() {
     const successMsg = document.getElementById('successMessage');
-    successMsg.style.display = 'block';
-    
-    setTimeout(() => {
-        successMsg.style.display = 'none';
-    }, 2000);
+    if (successMsg) {
+        successMsg.style.display = 'block';
+        
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 2000);
+    }
 }
 
 // Smooth scrolling for navigation links
@@ -245,6 +274,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
 // Scroll to Top Button Functionality
 const scrollToTopBtn = document.getElementById('scrollToTopBtn');
 
