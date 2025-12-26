@@ -15,9 +15,10 @@ This guide explains how to turn a standard Google Sheet into a working database 
 | A | Date |
 | B | Name |
 | C | Email |
-| D | Password |
-| E | Status |
-| F | Created |
+| D | Phone |
+| E | Password |
+| F | Status |
+| G | Created |
 
 ### Sheet 2: Orders Sheet
 | Column | Header |
@@ -126,10 +127,13 @@ function handleUserRegistration(data) {
     const usersSheet = getSheet('Users Sheet');
     const values = usersSheet.getDataRange().getValues();
     
-    // Check if user already exists
+    // Check if user already exists (by email or phone)
     for (let i = 1; i < values.length; i++) {
       if (values[i][2] === data.email) { // Column C is Email
-        return { status: 'error', message: 'User already exists' };
+        return { status: 'error', message: 'Email already exists' };
+      }
+      if (values[i][3] === data.phone) { // Column D is Phone
+        return { status: 'error', message: 'Phone number already exists' };
       }
     }
     
@@ -139,9 +143,10 @@ function handleUserRegistration(data) {
       timestamp, // Column A: Date
       data.name, // Column B: Name
       data.email, // Column C: Email
-      data.password, // Column D: Password
-      'active', // Column E: Status
-      timestamp // Column F: Created
+      data.phone, // Column D: Phone
+      data.password, // Column E: Password
+      'active', // Column F: Status
+      timestamp // Column G: Created
     ]);
     
     return { status: 'success', message: 'User registered successfully' };
@@ -156,17 +161,30 @@ function handleUserLogin(data) {
     const usersSheet = getSheet('Users Sheet');
     const values = usersSheet.getDataRange().getValues();
     
+    // Determine login type (email or phone)
+    const loginType = data.loginType || 'email';
+    const loginValue = loginType === 'email' ? data.email : data.phone;
+    
     // Find user and validate password
     for (let i = 1; i < values.length; i++) {
-      if (values[i][2] === data.email) { // Column C is Email
-        if (values[i][3] === data.password) { // Column D is Password
+      let isMatched = false;
+      
+      if (loginType === 'email' && values[i][2] === loginValue) { // Column C is Email
+        isMatched = true;
+      } else if (loginType === 'phone' && values[i][3] === loginValue) { // Column D is Phone
+        isMatched = true;
+      }
+      
+      if (isMatched) {
+        if (values[i][4] === data.password) { // Column E is Password
           return { 
             status: 'success', 
             message: 'Login successful',
             user: {
               name: values[i][1],
               email: values[i][2],
-              status: values[i][4]
+              phone: values[i][3],
+              status: values[i][5]
             }
           };
         } else {
@@ -175,7 +193,7 @@ function handleUserLogin(data) {
       }
     }
     
-    return { status: 'error', message: 'User not found' };
+    return { status: 'user_not_found', message: 'User not found' };
   } catch(error) {
     return { status: 'error', message: error.toString() };
   }

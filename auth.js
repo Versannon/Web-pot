@@ -10,7 +10,7 @@ function handleCredentialResponse(response) {
     const userData = JSON.parse(jsonPayload);
     
     // Send to Google Apps Script backend as registration
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKjU_LFzfrE6lLLy03szZ-7XHtS2xgawBAUFwVpyCCq5NdgsPhnzXsbb3nO4bMIkAm/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -58,6 +58,29 @@ function handleCredentialResponse(response) {
     });
 }
 
+// Show coming soon message for Google Sign-In
+function showComingSoonMessage(event) {
+    event.preventDefault();
+    const modal = document.createElement('div');
+    modal.className = 'coming-soon-modal';
+    modal.innerHTML = `
+        <div class="coming-soon-content">
+            <div class="coming-soon-icon">🚀</div>
+            <h2>Coming Soon!</h2>
+            <p>Google Sign-In will be available soon.</p>
+            <p class="coming-soon-subtitle">We're working on bringing you more authentication options.</p>
+            <button onclick="this.closest('.coming-soon-modal').remove()" class="coming-soon-btn">Got it</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        if (modal.parentElement) {
+            modal.remove();
+        }
+    }, 4000);
+}
 
 // Initialize Google Sign-In on page load
 window.onload = function() {
@@ -67,6 +90,27 @@ window.onload = function() {
         });
     }
 };
+
+// Switch between email and phone login tabs
+function switchLoginTab(element) {
+    const tabType = element.getAttribute('data-tab');
+    
+    // Update active tab button
+    document.querySelectorAll('.login-tab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    element.classList.add('active');
+    
+    // Update active content
+    document.querySelectorAll('.login-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    const contentDiv = document.getElementById(tabType + '-login');
+    if (contentDiv) {
+        contentDiv.classList.add('active');
+    }
+}
 
 // Toggle between login and registration forms
 function toggleForms(event) {
@@ -123,11 +167,25 @@ function updatePasswordStrength(password) {
 function handleLogin(event) {
     event.preventDefault();
     
-    const email = document.getElementById('login-email').value;
+    // Determine which login method is being used
+    const emailTab = document.querySelector('.login-tab[data-tab="email"]');
+    const phoneTab = document.querySelector('.login-tab[data-tab="phone"]');
+    const isEmailLogin = emailTab && emailTab.classList.contains('active');
+    
+    let loginValue, loginType;
+    
+    if (isEmailLogin) {
+        loginValue = document.getElementById('login-email')?.value;
+        loginType = 'email';
+    } else {
+        loginValue = document.getElementById('login-phone')?.value;
+        loginType = 'phone';
+    }
+    
     const password = document.getElementById('login-password').value;
     
-    if (!email || !password) {
-        alert('Please fill in all fields');
+    if (!loginValue || !password) {
+        alert(`Please fill in ${loginType} and password`);
         return;
     }
     
@@ -137,7 +195,7 @@ function handleLogin(event) {
     submitBtn.textContent = 'Logging in...';
     submitBtn.disabled = true;
     
-    // Send to Google Apps Script backend
+    // First, check if user exists
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-p8NKkv8h53UMachUsdDrykhniBlEuv68ZurwE5tXBEQ7npsAqVr8NXT9MueGiZL1/exec';
     
     fetch(APPS_SCRIPT_URL, {
@@ -145,16 +203,19 @@ function handleLogin(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             formType: 'login',
-            email: email,
+            loginType: loginType,
+            [loginType]: loginValue,
             password: password
         })
     })
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
+            // User exists and password is correct
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', data.user.email);
             localStorage.setItem('webpotUserName', data.user.name);
+            localStorage.setItem('webpotUserPhone', data.user.phone || '');
             
             // Create initials for avatar
             const initials = data.user.name.split(' ').map(n => n[0]).join('');
@@ -166,8 +227,34 @@ function handleLogin(event) {
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);
+        } else if (data.status === 'user_not_found') {
+            // User doesn't exist - redirect to registration
+            alert(`No account found with this ${loginType}. Please register first.`);
+            
+            // Show registration form and populate email if available
+            toggleForms(event);
+            
+            if (loginType === 'email') {
+                const registerEmail = document.getElementById('register-email');
+                if (registerEmail) {
+                    registerEmail.value = loginValue;
+                }
+            } else if (loginType === 'phone') {
+                const registerPhone = document.getElementById('register-phone');
+                if (registerPhone) {
+                    registerPhone.value = loginValue;
+                }
+            }
+            
+            // Focus on name field for registration
+            setTimeout(() => {
+                const nameField = document.getElementById('register-name');
+                if (nameField) {
+                    nameField.focus();
+                }
+            }, 300);
         } else {
-            alert('Login failed: ' + data.message);
+            alert('Login failed: ' + (data.message || 'Invalid credentials'));
         }
     })
     .catch(err => {
@@ -186,6 +273,7 @@ function handleRegister(event) {
     
     const name = document.getElementById('register-name').value;
     const email = document.getElementById('register-email').value;
+    const phone = document.getElementById('register-phone').value;
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
     
@@ -195,7 +283,7 @@ function handleRegister(event) {
         return;
     }
     
-    if (!name || !email || !password) {
+    if (!name || !email || !phone || !password) {
         alert('Please fill in all fields');
         return;
     }
@@ -216,6 +304,7 @@ function handleRegister(event) {
             formType: 'register',
             name: name,
             email: email,
+            phone: phone,
             password: password
         })
     })
@@ -225,6 +314,7 @@ function handleRegister(event) {
             localStorage.setItem('webpotUserLoggedIn', 'true');
             localStorage.setItem('webpotUserEmail', email);
             localStorage.setItem('webpotUserName', name);
+            localStorage.setItem('webpotUserPhone', phone);
             
             // Create initials for avatar
             const initials = name.split(' ').map(n => n[0]).join('');
@@ -239,7 +329,7 @@ function handleRegister(event) {
                 window.location.href = 'index.html';
             }, 3000);
         } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + (data.message || 'Registration failed'));
         }
     })
     .catch(err => {
