@@ -36,28 +36,11 @@
             </div>
 
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="login-tabs">
-                    <button type="button" class="login-tab active" data-tab="email" onclick="switchLoginTab(this)">📧 Email</button>
-                    <button type="button" class="login-tab" data-tab="phone" onclick="switchLoginTab(this)">📱 Phone</button>
-                </div>
-
-                <div id="email-login" class="login-tab-content active">
-                    <div class="form-group">
-                        <label for="login-email">Email Address</label>
-                        <div class="input-wrapper">
-                            <input type="email" id="login-email" name="email" placeholder="you@example.com">
-                            <span class="input-icon">📧</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="phone-login" class="login-tab-content">
-                    <div class="form-group">
-                        <label for="login-phone">Phone Number</label>
-                        <div class="input-wrapper">
-                            <input type="tel" id="login-phone" name="phone" placeholder="+1 (555) 123-4567">
-                            <span class="input-icon">📱</span>
-                        </div>
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="login-email" name="email" required placeholder="you@example.com">
+                        <span class="input-icon">📧</span>
                     </div>
                 </div>
 
@@ -123,14 +106,6 @@
                     <div class="input-wrapper">
                         <input type="email" id="register-email" name="email" required placeholder="you@example.com">
                         <span class="input-icon">📧</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="register-phone">Phone Number</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="register-phone" name="phone" required placeholder="+1 (555) 123-4567">
-                        <span class="input-icon">📱</span>
                     </div>
                 </div>
 
