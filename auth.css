@@ -289,6 +289,7 @@ body {
     transition: all 0.3s ease;
     padding: 0.4rem 0.8rem;
     border-radius: 4px;
+    z-index: 10;
 }
 
 .toggle-password:hover {
