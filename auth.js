@@ -10,7 +10,7 @@ function handleCredentialResponse(response) {
     const userData = JSON.parse(jsonPayload);
     
     // Send to Google Apps Script backend as registration
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynlLRxNakaA-CxiB0goHg1dzS1Ss6eIlm1WOBS3CitnUXJlCPZtgwm5f3p5di8QRSv/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvX46w235MMn5C7lRuSWud6nuTt20CSEKFMW-2irRrY2OiWC34qn24Nv-uxA7VS0Oa/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -182,7 +182,7 @@ function handleLogin(event) {
     submitBtn.disabled = true;
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynlLRxNakaA-CxiB0goHg1dzS1Ss6eIlm1WOBS3CitnUXJlCPZtgwm5f3p5di8QRSv/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvX46w235MMn5C7lRuSWud6nuTt20CSEKFMW-2irRrY2OiWC34qn24Nv-uxA7VS0Oa/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -265,7 +265,7 @@ function handleRegister(event) {
     submitBtn.disabled = true;
     
     // Send to Google Apps Script backend
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynlLRxNakaA-CxiB0goHg1dzS1Ss6eIlm1WOBS3CitnUXJlCPZtgwm5f3p5di8QRSv/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvX46w235MMn5C7lRuSWud6nuTt20CSEKFMW-2irRrY2OiWC34qn24Nv-uxA7VS0Oa/exec';
     
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
